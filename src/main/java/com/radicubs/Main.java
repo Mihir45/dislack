@@ -9,5 +9,8 @@ public class Main {
     public static void main(String[] arguments) throws Exception {
         JDA api = JDABuilder.createDefault(BOT_TOKEN, GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_MEMBERS).build();
         api.addEventListener(new DiscordListener());
+        api.updateCommands().addCommands(
+
+        );
     }
 }
