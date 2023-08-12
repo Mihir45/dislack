@@ -13,10 +13,10 @@ public class DiscordListener extends ListenerAdapter
         if (event.getAuthor().isBot()) return;
         Message message = event.getMessage();
         String content = message.getContentRaw();
-        if (content.equals("!ping"))
-        {
+        //if (content.equals("!ping"))
+        //{
             MessageChannel channel = event.getChannel();
-            channel.sendMessage("Pong!").queue(); // Important to call .queue() on the RestAction returned by sendMessage(...)
-        }
+            channel.sendMessage("Karthik is a " + content).queue(); // Important to call .queue() on the RestAction returned by sendMessage(...)
+        //}
     }
 }
