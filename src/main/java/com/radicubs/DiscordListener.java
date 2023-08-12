@@ -16,7 +16,7 @@ public class DiscordListener extends ListenerAdapter
         //if (content.equals("!ping"))
         //{
             MessageChannel channel = event.getChannel();
-            channel.sendMessage("Karthik is a " + content).queue(); // Important to call .queue() on the RestAction returned by sendMessage(...)
+            channel.sendMessage("Mihir is a " + content).queue(); // Important to call .queue() on the RestAction returned by sendMessage(...)
         //}
     }
 }
