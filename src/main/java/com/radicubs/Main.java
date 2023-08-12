@@ -2,6 +2,7 @@ package com.radicubs;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
 public class Main {
@@ -9,8 +10,6 @@ public class Main {
     public static void main(String[] arguments) throws Exception {
         JDA api = JDABuilder.createDefault(BOT_TOKEN, GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_MEMBERS).build();
         api.addEventListener(new DiscordListener());
-        api.updateCommands().addCommands(
-
-        );
+        api.upsertCommand("setup", "sets up the discord server with the slack stuff").queue();
     }
 }
