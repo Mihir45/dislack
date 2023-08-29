@@ -1,3 +1,5 @@
+package com.radicubs.examples;
+
 import com.slack.api.Slack;
 import com.slack.api.methods.SlackApiException;
 import com.slack.api.model.Message;

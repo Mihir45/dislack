@@ -14,7 +14,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>com.radicubs.Main</mainClass>
+              <mainClass>com.radicubs.SlackListener</mainClass>
             </manifest>
           </archive>
           <descriptorRefs>
