@@ -3,6 +3,7 @@ package com.radicubs;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
@@ -12,9 +13,10 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 
 public class DiscordListener extends ListenerAdapter
 {
+    private static JDA api;
     private static final String BOT_TOKEN = "MTE0MDAxOTE0MDA5NTEzNTc3NQ.GBrK9k.mm689iw4ieC5WDZPTNYiexOhYYz9MbhygVstz8";
-    public static void main(String[] arguments) throws Exception {
-        JDA api = JDABuilder.createDefault(BOT_TOKEN, GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_MEMBERS).build();
+    public static void main(String[] arguments){
+        api = JDABuilder.createDefault(BOT_TOKEN, GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_MEMBERS).build();
         api.addEventListener(new DiscordListener());
         api.upsertCommand("setup", "sets up the discord server with the slack stuff").queue();
     }
@@ -37,5 +39,11 @@ public class DiscordListener extends ListenerAdapter
             //event.deferReply().queue();
             event.reply("Shhhh! This is a secret! Karthik is a nerd!").queue();
         }
+    }
+
+    public static void sendDiscordMessage(String content){
+        long channelId = 1138202654540054631L;
+        TextChannel channel = api.getTextChannelById(channelId);
+        channel.sendMessage(content).queue();
     }
 }
