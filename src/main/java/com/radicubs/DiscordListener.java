@@ -1,5 +1,6 @@
 package com.radicubs;
 
+import com.slack.api.methods.SlackApiException;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Message;
@@ -10,6 +11,8 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+
+import java.io.IOException;
 
 public class DiscordListener extends ListenerAdapter
 {
@@ -26,6 +29,11 @@ public class DiscordListener extends ListenerAdapter
         if (event.getAuthor().isBot()) return;
         Message message = event.getMessage();
         String content = message.getContentRaw();
+        try {
+            SlackListener.sendSlackMessage(content);
+        } catch (SlackApiException | IOException e) {
+            System.out.println("failed to send message");
+        }
         if (content.equals("!ping"))
         {
             MessageChannel channel = event.getChannel();
@@ -46,4 +54,6 @@ public class DiscordListener extends ListenerAdapter
         TextChannel channel = api.getTextChannelById(channelId);
         channel.sendMessage(content).queue();
     }
+
+
 }
