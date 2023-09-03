@@ -37,6 +37,7 @@ public class SlackListener {
                         .token(BOT_TOKEN)
                         .channel("C05LHK7SK54")
                         .text(content)
+                        .username("Jacob")
                 // You could also use a blocks[] array to send richer content
         );
     }
