@@ -29,8 +29,12 @@ public class DiscordListener extends ListenerAdapter
         if (event.getAuthor().isBot()) return;
         Message message = event.getMessage();
         String content = message.getContentRaw();
+        String name = event.getMember().getNickname();
+        if(name == null)
+            name = event.getMember().getEffectiveName();
         try {
-            SlackListener.sendSlackMessage(content, event.getMember().getNickname(), event.getMember().getEffectiveAvatarUrl() );
+
+            SlackListener.sendSlackMessage(content, name, event.getMember().getEffectiveAvatarUrl());
         } catch (SlackApiException | IOException e) {
             System.out.println("failed to send message");
         }
