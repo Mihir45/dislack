@@ -8,6 +8,8 @@ import com.slack.api.methods.response.chat.ChatPostMessageResponse;
 import com.slack.api.model.event.AppMentionEvent;
 import com.slack.api.bolt.socket_mode.SocketModeApp;
 import com.slack.api.model.event.MessageEvent;
+
+import javax.xml.namespace.QName;
 import java.io.IOException;
 
 public class SlackListener {
@@ -31,13 +33,15 @@ public class SlackListener {
         SocketModeApp socketModeApp = new SocketModeApp(APP_TOKEN, app);
         socketModeApp.start();
     }
-    public static void sendSlackMessage(String content) throws SlackApiException, IOException {
+    public static void sendSlackMessage(String content, String name, String url) throws SlackApiException, IOException {
         ChatPostMessageResponse result = client.chatPostMessage(r -> r
                         // The token you used to initialize your app
                         .token(BOT_TOKEN)
                         .channel("C05LHK7SK54")
                         .text(content)
-                        .username("Jacob")
+                        .username(name)
+                        .iconUrl(url)
+
                 // You could also use a blocks[] array to send richer content
         );
     }

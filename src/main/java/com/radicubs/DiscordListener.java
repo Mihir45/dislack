@@ -30,7 +30,7 @@ public class DiscordListener extends ListenerAdapter
         Message message = event.getMessage();
         String content = message.getContentRaw();
         try {
-            SlackListener.sendSlackMessage(content);
+            SlackListener.sendSlackMessage(content, event.getMember().getNickname(), event.getMember().getEffectiveAvatarUrl() );
         } catch (SlackApiException | IOException e) {
             System.out.println("failed to send message");
         }
