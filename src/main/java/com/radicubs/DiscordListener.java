@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class DiscordListener extends ListenerAdapter
 {
@@ -53,11 +54,16 @@ public class DiscordListener extends ListenerAdapter
         }
     }
 
-    public static void sendDiscordMessage(String content){
+    public static void sendDiscordMessage(String content) {
         long channelId = 1138202654540054631L;
         TextChannel channel = api.getTextChannelById(channelId);
-        channel.sendMessage(content).queue();
+        if (Objects.equals(content, "<@U05L9NTP223>")) {
+            channel.sendMessage("<@580538439003537418>").queue();
+        } else if (Objects.equals(content, "<@U05LQ5V7XHR>")) {
+            channel.sendMessage("<@692151503061778492>").queue();
+        } else {
+            channel.sendMessage(content).queue();
+        }
     }
-
 
 }
