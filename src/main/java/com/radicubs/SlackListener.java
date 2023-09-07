@@ -26,7 +26,6 @@ public class SlackListener {
 
         app.event(MessageEvent.class, (req, ctx) -> {
             DiscordListener.sendDiscordMessage(req.getEvent().getText());
-            ctx.say("Hi there!");
             return ctx.ack();
         });
 
