@@ -29,14 +29,16 @@ public class DiscordListener extends ListenerAdapter
     {
         if (event.getAuthor().isBot()) return;
         Message message = event.getMessage();
-        String content;
-            if(message.getContentRaw().equals("<@580538439003537418>")){
+        String content = message.getContentRaw();
+        switch (content){
+            case "<@580538439003537418>":
                 content = "<@U05L9NTP223>";
-            } else if (message.getContentRaw().equals("<@692151503061778492>")) {
+                break;
+            case "<@692151503061778492>":
                 content = "<@U05LQ5V7XHR>";
-            }else{
-                content = message.getContentRaw();
-            }
+                break;
+
+        }
         String name = event.getMember().getNickname();
         if(name == null)
             name = event.getMember().getEffectiveName();
