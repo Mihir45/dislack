@@ -1,18 +1,26 @@
 package com.radicubs;
 
+import club.minnced.discord.webhook.WebhookClient;
+import club.minnced.discord.webhook.WebhookClientBuilder;
 import com.slack.api.methods.SlackApiException;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.Message;
+
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.managers.WebhookManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.requests.restaction.WebhookAction;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Objects;
 
 public class DiscordListener extends ListenerAdapter
@@ -63,16 +71,31 @@ public class DiscordListener extends ListenerAdapter
         }
     }
 
-    public static void sendDiscordMessage(String content) {
+    public static void sendDiscordMessage(String content, String name, String url){
+        System.out.println(name + " " + url);
         long channelId = 1138202654540054631L;
         TextChannel channel = api.getTextChannelById(channelId);
-        if (Objects.equals(content, "<@U05L9NTP223>")) {
-            channel.sendMessage("<@580538439003537418>").queue();
-        } else if (Objects.equals(content, "<@U05LQ5V7XHR>")) {
-            channel.sendMessage("<@692151503061778492>").queue();
-        } else {
-            channel.sendMessage(content).queue();
-        }
+
+        channel.createWebhook(name).queue(webhook -> {
+            try{
+                WebhookManager manager = webhook.getManager();
+                manager.setAvatar(Icon.from(new URL(url).openStream(), Icon.IconType.PNG)).queue();
+            }
+            catch(IOException e){
+                throw new RuntimeException(e.getMessage());
+            }
+            WebhookClient client = WebhookClientBuilder.fromJDA(webhook).build();
+
+            if (content.equals("<@U05L9NTP223>")) {
+                client.send("<@580538439003537418>");
+            } else if (content.equals("<@U05LQ5V7XHR>")) {
+                client.send("<@692151503061778492>");
+            } else {
+                client.send(content);
+            }
+            webhook.delete().queue();
+        });
+
     }
 
 }

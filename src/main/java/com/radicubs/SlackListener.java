@@ -5,6 +5,9 @@ import com.slack.api.bolt.AppConfig;
 import com.slack.api.methods.MethodsClient;
 import com.slack.api.methods.SlackApiException;
 import com.slack.api.methods.response.chat.ChatPostMessageResponse;
+import com.slack.api.methods.response.users.UsersIdentityResponse;
+import com.slack.api.methods.response.users.profile.UsersProfileGetResponse;
+import com.slack.api.model.User;
 import com.slack.api.model.event.AppMentionEvent;
 import com.slack.api.bolt.socket_mode.SocketModeApp;
 import com.slack.api.model.event.MessageEvent;
@@ -19,15 +22,22 @@ public class SlackListener {
     private static final String BOT_TOKEN = "xoxb-5716940559697-5735533709972-Ln0h3OYtfPsQ5r2gbBSB1eJ9";
     public static void main(String[] args) throws Exception {
 
-        client = Slack.getInstance().methods();
         AppConfig appConfig = AppConfig.builder().singleTeamBotToken(BOT_TOKEN).build();
 
         app = new App(appConfig);
 
         app.event(MessageEvent.class, (req, ctx) -> {
-            DiscordListener.sendDiscordMessage(req.getEvent().getText());
+            UsersProfileGetResponse result = client.usersProfileGet(r -> r
+                    .token(BOT_TOKEN)
+                    .user(req.getEvent().getUser()));
+
+            User.Profile profile = result.getProfile();
+
+            DiscordListener.sendDiscordMessage(req.getEvent().getText(), profile.getDisplayNameNormalized(), profile.getImage192());
             return ctx.ack();
         });
+
+        client = app.getClient();
 
         SocketModeApp socketModeApp = new SocketModeApp(APP_TOKEN, app);
         socketModeApp.start();
