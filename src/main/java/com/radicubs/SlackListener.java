@@ -27,13 +27,14 @@ public class SlackListener {
         app = new App(appConfig);
 
         app.event(MessageEvent.class, (req, ctx) -> {
+            String slackUserId = req.getEvent().getUser();
             UsersProfileGetResponse result = client.usersProfileGet(r -> r
                     .token(BOT_TOKEN)
-                    .user(req.getEvent().getUser()));
+                    .user(slackUserId));
 
             User.Profile profile = result.getProfile();
 
-            DiscordListener.sendDiscordMessage(req.getEvent().getText(), profile.getDisplayNameNormalized(), profile.getImage192());
+            DiscordListener.sendDiscordMessage(req.getEvent().getText(), profile.getDisplayNameNormalized(), slackUserId, profile.getImage192());
             return ctx.ack();
         });
 

@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.Message;
 
+import net.dv8tion.jda.api.entities.Webhook;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -16,21 +17,36 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.managers.WebhookManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookAction;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Objects;
+import java.util.Scanner;
+import java.util.function.Consumer;
 
 public class DiscordListener extends ListenerAdapter
 {
     private static JDA api;
     private static final String BOT_TOKEN = "MTE0MDAxOTE0MDA5NTEzNTc3NQ.GBrK9k.mm689iw4ieC5WDZPTNYiexOhYYz9MbhygVstz8";
-    public static void main(String[] arguments){
+    private static HashMap<String, String> slackIdToWebhook = new HashMap<>();
+    private static Scanner f;
+    private static FileWriter fw;
+    public static void main(String[] arguments) throws IOException{
+        f = new Scanner(new File("C:\\Users\\shail\\Documents\\coding_stuff\\Radicubs Robotics\\dislack\\src\\main\\java\\com\\radicubs\\SlackIdToWebhook.txt"));
+        fw = new FileWriter("C:\\Users\\shail\\Documents\\coding_stuff\\Radicubs Robotics\\dislack\\src\\main\\java\\com\\radicubs\\SlackIdToWebhook.txt", true);
+        while(f.hasNext()){
+            String[] ids = f.nextLine().split(" ");
+            slackIdToWebhook.put(ids[0], ids[1]);
+        }
+
         api = JDABuilder.createDefault(BOT_TOKEN, GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_MEMBERS).build();
         api.addEventListener(new DiscordListener());
         api.upsertCommand("setup", "sets up the discord server with the slack stuff").queue();
+
     }
     @Override
     public void onMessageReceived(MessageReceivedEvent event)
@@ -38,7 +54,7 @@ public class DiscordListener extends ListenerAdapter
         if (event.getAuthor().isBot()) return;
         Message message = event.getMessage();
         String content = message.getContentRaw();
-        switch (content){
+        /*switch (content){
             case "<@580538439003537418>":
                 content = "<@U05L9NTP223>";
                 break;
@@ -46,7 +62,7 @@ public class DiscordListener extends ListenerAdapter
                 content = "<@U05LQ5V7XHR>";
                 break;
 
-        }
+        }*/
         String name = event.getMember().getNickname();
         if(name == null)
             name = event.getMember().getEffectiveName();
@@ -71,19 +87,22 @@ public class DiscordListener extends ListenerAdapter
         }
     }
 
-    public static void sendDiscordMessage(String content, String name, String url){
+    public static void sendDiscordMessage(String content, String name, String id, String url){
         System.out.println(name + " " + url);
         long channelId = 1138202654540054631L;
         TextChannel channel = api.getTextChannelById(channelId);
 
-        channel.createWebhook(name).queue(webhook -> {
+
+        Consumer onWebhook = w -> {
+            Webhook webhook = (Webhook) w;
             try{
                 WebhookManager manager = webhook.getManager();
                 manager.setAvatar(Icon.from(new URL(url).openStream(), Icon.IconType.PNG)).queue();
             }
             catch(IOException e){
-                throw new RuntimeException(e.getMessage());
+                throw new RuntimeException(e);
             }
+
             WebhookClient client = WebhookClientBuilder.fromJDA(webhook).build();
 
             if (content.equals("<@U05L9NTP223>")) {
@@ -93,9 +112,30 @@ public class DiscordListener extends ListenerAdapter
             } else {
                 client.send(content);
             }
-            webhook.delete().queue();
-        });
 
+            if(!slackIdToWebhook.containsKey(id)){
+                try {
+                    fw.write("" + id + " " + webhook.getId() + "\n");
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                slackIdToWebhook.put(id, webhook.getId());
+            }
+        };
+
+        boolean failed = true;
+        if(slackIdToWebhook.containsKey(id)){
+            try{
+                api.retrieveWebhookById(slackIdToWebhook.get(id)).queue(onWebhook);
+                failed = false;
+            }
+            catch(Exception e){
+                System.out.println("Retrieving existed webhook errored out :/");
+            }
+        }
+        if(failed){
+            channel.createWebhook(name).queue(onWebhook);
+        }
     }
 
 }
