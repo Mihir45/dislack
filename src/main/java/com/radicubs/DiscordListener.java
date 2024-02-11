@@ -31,13 +31,13 @@ import java.util.function.Consumer;
 public class DiscordListener extends ListenerAdapter
 {
     private static JDA api;
-    private static final String BOT_TOKEN = "MTE0MDAxOTE0MDA5NTEzNTc3NQ.GBrK9k.mm689iw4ieC5WDZPTNYiexOhYYz9MbhygVstz8";
+    private static final String BOT_TOKEN = "DISCORD BOT TOKEN";
     private static HashMap<String, String> slackIdToWebhook = new HashMap<>();
     private static Scanner f;
     private static FileWriter fw;
     public static void main(String[] arguments) throws IOException{
-        f = new Scanner(new File("C:\\Users\\shail\\Documents\\coding_stuff\\Radicubs Robotics\\dislack\\src\\main\\java\\com\\radicubs\\SlackIdToWebhook.txt"));
-        fw = new FileWriter("C:\\Users\\shail\\Documents\\coding_stuff\\Radicubs Robotics\\dislack\\src\\main\\java\\com\\radicubs\\SlackIdToWebhook.txt", true);
+        f = new Scanner(new File("SlackIdToWebhook.txt"));
+        fw = new FileWriter("SlackIdToWebhook.txt", true);
         while(f.hasNext()){
             String[] ids = f.nextLine().split(" ");
             slackIdToWebhook.put(ids[0], ids[1]);
@@ -54,15 +54,7 @@ public class DiscordListener extends ListenerAdapter
         if (event.getAuthor().isBot()) return;
         Message message = event.getMessage();
         String content = message.getContentRaw();
-        /*switch (content){
-            case "<@580538439003537418>":
-                content = "<@U05L9NTP223>";
-                break;
-            case "<@692151503061778492>":
-                content = "<@U05LQ5V7XHR>";
-                break;
 
-        }*/
         String name = event.getMember().getNickname();
         if(name == null)
             name = event.getMember().getEffectiveName();
@@ -75,15 +67,14 @@ public class DiscordListener extends ListenerAdapter
         if (content.equals("!ping"))
         {
             MessageChannel channel = event.getChannel();
-            channel.sendMessage("Pong!").queue(); // Important to call .queue() on the RestAction returned by sendMessage(...)
+            channel.sendMessage("Pong!").queue();
         }
     }
 
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         if(event.getName().equals("setup")){
-            //event.deferReply().queue();
-            event.reply("Shhhh! This is a secret! Karthik is a nerd!").queue();
+            event.reply("Setup command!").queue();
         }
     }
 
@@ -105,13 +96,7 @@ public class DiscordListener extends ListenerAdapter
 
             WebhookClient client = WebhookClientBuilder.fromJDA(webhook).build();
 
-            if (content.equals("<@U05L9NTP223>")) {
-                client.send("<@580538439003537418>");
-            } else if (content.equals("<@U05LQ5V7XHR>")) {
-                client.send("<@692151503061778492>");
-            } else {
-                client.send(content);
-            }
+            client.send(content);
 
             if(!slackIdToWebhook.containsKey(id)){
                 try {
